@@ -88,5 +88,79 @@ After cleaning, tempo was the only column with meaningful missing values. Since 
 
 Permutation tests comparing rows with missing and observed tempo values showed extremely small p-values (less than 0.00001) for danceability, energy, loudness, speechiness, acousticness, instrumentalness, liveness, and valence, suggesting tempo missingness depends on these observed variables. In contrast, key produced a large p-value (greater than 0.1), meaning there was insufficient evidence that tempo missingness depends on the musical key of the music.
 
+<iframe
+src="assets/tempo_missing_energy.html"
+width="100%"
+height="400"
+frameborder="0">
+</iframe>
+
+This plot compares energy levels for tracks with missing and non-missing tempo values. Tracks with missing tempo appear to have a different energy distribution, supporting the permutation test results that tempo missingness depends on observed audio characteristics rather than occurring completely at random.
+
 Because tempo missingness appears related to observed audio characteristics, MAR appears more likely than NMAR. This is also supported by the fact that observed tempo values already span a broad range of reasonable musical tempos rather than appearing concentrated near particular values. However, if certain rhythmic structures or extraction difficulty directly cause tempo to become missing, then tempo would instead be NMAR. Additional data such as Spotify extraction confidence or rhythm metadata could help distinguish these possibilities. Thus, I do not believe there is a column in the dataset that is NMAR.
+
+## Hypothesis Testing
+
+To relate audio characteristics to popularity, I tested whether danceability is associated with popularity.
+
+**Null Hypothesis:** Tracks with above-median danceability have the same popularity distribution as tracks with below-median danceability.
+
+**Alternative Hypothesis:** Tracks with above-median danceability have a different popularity distribution than tracks with below-median danceability.
+
+**Test Statistic:** The absolute difference in mean popularity between above-median and below-median danceability tracks.
+
+**Significance Level:** 0.05.
+
+Using 10,000 permutations, the p-value was approximately 0, meaning that none of the shuffled trials produced a test statistic as large as the observed one. At the 0.05 significance level, we reject the null hypothesis. The observed difference is statistically significant and provides evidence of an association between danceability and popularity in the selected music categories overall.
+
+## Framing a Prediction Problem
+
+I will predict a track’s Spotify popularity score using its audio characteristics and music category. This is a **regression** problem because popularity is a continuous numerical variable ranging from 0 to 100.
+
+The response variable is `popularity`. I chose popularity because the central question of this project is whether different music categories reward different audio characteristics when it comes to popularity. Predicting popularity directly allows me to evaluate how well a track’s measurable musical characteristics explain its success on Spotify.
+
+At the time of prediction, I assume that a track’s audio characteristics have already been extracted. Therefore, features such as `duration_ms`, `danceability`, `energy`, `loudness`, `speechiness`, `acousticness`, `instrumentalness`, `liveness`, `valence`, `tempo`, `time_signature`, and `track_genre` are available. Popularity itself is not available at prediction time and will not be used as a predictor.
+
+Model performance will be evaluated using **Mean Absolute Error (MAE)**. MAE measures the average absolute difference between predicted and actual popularity scores, making it directly interpretable in the original popularity scale. I chose MAE over classification metrics such as accuracy because popularity is continuous, and over metrics such as RMSE because MAE is less sensitive to extreme prediction errors and will not tend towards the extreme values like RMSE.
+
+## Baseline Model
+
+My baseline model uses **linear regression** to predict Spotify popularity from audio characteristics and music category. All preprocessing and model fitting were implemented in a single sklearn pipeline.
+
+The model uses **9 quantitative features**, **1 ordinal feature**, and **4 nominal features**:
+
+* Quantitative: `duration_ms`, `danceability`, `energy`, `loudness`, `speechiness`, `acousticness`, `instrumentalness`, `liveness`, `valence`
+* Ordinal: `time_signature`
+* Nominal: `explicit`, `mode`, `track_genre`, `key`
+
+Quantitative and ordinal features were standardized using `StandardScaler`. The nominal features `track_genre` and `key` were transformed using one-hot encoding. Although `explicit` and `mode` are nominal variables, they were already represented numerically and were passed through unchanged.
+
+The baseline model achieved a **Mean Absolute Error (MAE) of 12.59** and an **R² of 0.528** on the test set.
+
+I do not consider this model fully satisfactory, but I consider it a "good" reasonable baseline. On average, predictions differ from actual popularity by about 13 popularity points, and the model explains approximately 53% of the variation in popularity. This suggests that audio characteristics and music category contain meaningful information about popularity, but that the relationship is not entirely linear and additional feature engineering or more flexible models may improve performance.
+
+## Final Model
+
+To improve upon the baseline model, I introduced several engineered interaction features and replaced linear regression with a random forest regressor.
+
+The new engineered features included interactions between audio characteristics: `danceability × energy`, `energy × valence`, and `speechiness × loudness`. These features were added because musical characteristics may combine to influence popularity rather than independently. For example, energetic tracks may be rewarded differently depending on whether they are also highly danceable.
+
+I also added interaction features between genre and energy as well as genre and danceability. These features were motivated directly by the project question about how different music categories reward different musical characteristics, the impact on popularity.
+
+The final model used a **Random Forest Regressor**. Unlike linear regression, random forests can model nonlinear relationships and capture interactions between features without assuming a single linear relationship across all tracks.
+
+To select the final model, I performed **GridSearchCV with 5-fold cross validation** while tuning three hyperparameters:
+
+* `n_estimators`: number of trees in the forest
+* `max_depth`: maximum complexity of each tree
+* `min_samples_leaf`: minimum observations required in terminal leaves
+
+The best-performing hyperparameters were:
+
+* `n_estimators = 200`
+* `max_depth = None`
+* `min_samples_leaf = 1`
+
+The final model achieved an **MAE of 9.08** and an **R² of 0.651**, improving over the baseline model’s **MAE of 12.59** and **R² of 0.528**. The lower MAE means predictions were closer to actual popularity values, while the increase in R² suggests the final model explained substantially more variation in popularity. This improvement supports the idea that relationships between audio characteristics, genre, and popularity are nonlinear and depend on interactions between musical traits.
+
 

@@ -36,14 +36,12 @@ The cleaned dataset produced the final DataFrame shown below.
 
 ### Head of Cleaned DataFrame
 
-```html
 <iframe
 src="assets/music_tracks_clean_head.html"
 width="100%"
 height="350"
 frameborder="0">
 </iframe>
-```
 
 ## Univariate Analysis
 

@@ -81,3 +81,12 @@ frameborder="0">
 </iframe>
 
 This grouped table shows the average audio characteristics for each selected music category. The differences across categories suggest that anime, classical, disney, jazz, and k-pop have different defining audio characteristics, which supports the project’s focus on whether different categories reward different musical traits.
+
+## Assessment of Missingness
+
+After cleaning, tempo was the only column with meaningful missing values. Since Spotify tempo values are generated from the audio itself, missingness does not seem likely to be MCAR and may instead depend on observed audio characteristics (MAR) or the true underlying tempo value itself (NMAR).
+
+Permutation tests comparing rows with missing and observed tempo values showed extremely small p-values (less than 0.00001) for danceability, energy, loudness, speechiness, acousticness, instrumentalness, liveness, and valence, suggesting tempo missingness depends on these observed variables. In contrast, key produced a large p-value (greater than 0.1), meaning there was insufficient evidence that tempo missingness depends on the musical key of the music.
+
+Because tempo missingness appears related to observed audio characteristics, MAR appears more likely than NMAR. This is also supported by the fact that observed tempo values already span a broad range of reasonable musical tempos rather than appearing concentrated near particular values. However, if certain rhythmic structures or extraction difficulty directly cause tempo to become missing, then tempo would instead be NMAR. Additional data such as Spotify extraction confidence or rhythm metadata could help distinguish these possibilities. Thus, I do not believe there is a column in the dataset that is NMAR.
+

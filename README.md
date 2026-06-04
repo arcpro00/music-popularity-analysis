@@ -54,7 +54,7 @@ frameborder="0">
 <iframe
 src="assets/log_popularity_distribution.html"
 width="100%"
-height="500"
+height="400"
 frameborder="0">
 </iframe>
 
@@ -65,7 +65,7 @@ Popularity is concentrated at low values, indicating that most tracks in the sel
 <iframe
 src="assets/popularity_by_genre.html"
 width="100%"
-height="500"
+height="400"
 frameborder="0">
 </iframe>
 
@@ -76,7 +76,7 @@ Popularity distributions differ across the selected music categories. This sugge
 <iframe
 src="assets/genre_audio_summary.html"
 width="100%"
-height="600"
+height="400"
 frameborder="0">
 </iframe>
 
@@ -178,7 +178,7 @@ A positive value indicates that the model performs better for non-k-pop tracks.
 
 **Significance Level:** 0.05.
 
-Using the already-trained final model, I performed a permutation test with 10,000 permutations by randomly reassigning group labels while keeping predictions fixed. The observed difference in R² was **0.248**, and the resulting p-value was **0.0011**.
+Using the final model, I performed a permutation test with 10,000 permutations by randomly reassigning group labels while keeping predictions fixed. The observed difference in R² was **0.248**, and the resulting p-value was **0.0011**.
 
 Since the p-value is below 0.05, I reject the null hypothesis that model performance is similar across k-pop and non-k-pop tracks. This provides statistically significant evidence that predictive performance differs across these groups.
 

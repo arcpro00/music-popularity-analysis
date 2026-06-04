@@ -82,7 +82,7 @@ frameborder="0">
 
 This grouped table shows the average audio characteristics for each selected music category. The differences across categories suggest that anime, classical, disney, jazz, and k-pop have different defining audio characteristics, which supports the project’s focus on whether different categories reward different musical traits.
 
-## Assessment of Missingness
+# Assessment of Missingness
 
 After cleaning, tempo was the only column with meaningful missing values. Since Spotify tempo values are generated from the audio itself, missingness does not seem likely to be MCAR and may instead depend on observed audio characteristics (MAR) or the true underlying tempo value itself (NMAR).
 
@@ -99,7 +99,7 @@ This plot compares energy levels for tracks with missing and non-missing tempo v
 
 Because tempo missingness appears related to observed audio characteristics, MAR appears more likely than NMAR. This is also supported by the fact that observed tempo values already span a broad range of reasonable musical tempos rather than appearing concentrated near particular values. However, if certain rhythmic structures or extraction difficulty directly cause tempo to become missing, then tempo would instead be NMAR. Additional data such as Spotify extraction confidence or rhythm metadata could help distinguish these possibilities. Thus, I do not believe there is a column in the dataset that is NMAR.
 
-## Hypothesis Testing
+# Hypothesis Testing
 
 To relate audio characteristics to popularity, I tested whether danceability is associated with popularity.
 
@@ -113,7 +113,7 @@ To relate audio characteristics to popularity, I tested whether danceability is 
 
 Using 10,000 permutations, the p-value was approximately 0, meaning that none of the shuffled trials produced a test statistic as large as the observed one. At the 0.05 significance level, we reject the null hypothesis. The observed difference is statistically significant and provides evidence of an association between danceability and popularity in the selected music categories overall.
 
-## Framing a Prediction Problem
+# Framing a Prediction Problem
 
 I will predict a track’s Spotify popularity score using its audio characteristics and music category. This is a **regression** problem because popularity is a continuous numerical variable ranging from 0 to 100.
 
@@ -123,7 +123,7 @@ At the time of prediction, I assume that a track’s audio characteristics have 
 
 Model performance will be evaluated using **Mean Absolute Error (MAE)**. MAE measures the average absolute difference between predicted and actual popularity scores, making it directly interpretable in the original popularity scale. I chose MAE over classification metrics such as accuracy because popularity is continuous, and over metrics such as RMSE because MAE is less sensitive to extreme prediction errors and will not tend towards the extreme values like RMSE.
 
-## Baseline Model
+# Baseline Model
 
 My baseline model uses **linear regression** to predict Spotify popularity from audio characteristics and music category. All preprocessing and model fitting were implemented in a single sklearn pipeline.
 
@@ -139,7 +139,7 @@ The baseline model achieved a **Mean Absolute Error (MAE) of 12.59** and an **R�
 
 I do not consider this model fully satisfactory, but I consider it a "good" reasonable baseline. On average, predictions differ from actual popularity by about 13 popularity points, and the model explains approximately 53% of the variation in popularity. This suggests that audio characteristics and music category contain meaningful information about popularity, but that the relationship is not entirely linear and additional feature engineering or more flexible models may improve performance.
 
-## Final Model
+# Final Model
 
 To improve upon the baseline model, I introduced several engineered interaction features and replaced linear regression with a random forest regressor.
 
@@ -163,4 +163,23 @@ The best-performing hyperparameters were:
 
 The final model achieved an **MAE of 9.08** and an **R² of 0.651**, improving over the baseline model’s **MAE of 12.59** and **R² of 0.528**. The lower MAE means predictions were closer to actual popularity values, while the increase in R² suggests the final model explained substantially more variation in popularity. This improvement supports the idea that relationships between audio characteristics, genre, and popularity are nonlinear and depend on interactions between musical traits.
 
+# Fairness Analysis
 
+To evaluate whether the final model performs differently across groups, I compared predictive performance between **k-pop tracks (Group X)** and **non-k-pop tracks (Group Y)**. Because this is a regression problem, I used **R²** as the evaluation metric.
+
+**Null Hypothesis:** The final model is fair. The R² for k-pop tracks and non-k-pop tracks is approximately the same, and any observed difference is due to random chance.
+
+**Alternative Hypothesis:** The final model is unfair. The R² for k-pop tracks is smaller than the R² for non-k-pop tracks.
+
+**Test Statistic:**
+R²(non-k-pop) − R²(k-pop)
+
+A positive value indicates that the model performs better for non-k-pop tracks.
+
+**Significance Level:** 0.05.
+
+Using the already-trained final model, I performed a permutation test with 10,000 permutations by randomly reassigning group labels while keeping predictions fixed. The observed difference in R² was **0.248**, and the resulting p-value was **0.0011**.
+
+Since the p-value is below 0.05, I reject the null hypothesis that model performance is similar across k-pop and non-k-pop tracks. This provides statistically significant evidence that predictive performance differs across these groups.
+
+One possible explanation is that relationships between audio characteristics and popularity differ across genres, causing the model to generalize better to some categories than others. Since the final model includes genre-specific interaction features, differences in learned relationships across categories may contribute to unequal predictive performance. However, this result alone does not confirm the cause of the performance difference.

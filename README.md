@@ -76,7 +76,7 @@ Popularity distributions differ across the selected music categories. This sugge
 <iframe
 src="assets/genre_audio_summary.html"
 width="100%"
-height="400"
+height="200"
 frameborder="0">
 </iframe>
 

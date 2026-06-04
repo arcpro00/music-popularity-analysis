@@ -53,6 +53,14 @@ width="100%"
 height="500"
 frameborder="0">
 </iframe>
+<iframe
+src="assets/log_popularity_distribution.html"
+width="100%"
+height="500"
+frameborder="0">
+</iframe>
+
+Popularity is concentrated at low values, indicating that most tracks in the selected categories are not highly popular on Spotify. After applying a log transform, the distribution suggests a group of consistently low-popularity songs separated from a smaller group of substantially more popular tracks.
 
 ## Bivariate Analysis
 
@@ -63,6 +71,8 @@ height="500"
 frameborder="0">
 </iframe>
 
+Popularity distributions differ across the selected music categories. This suggests that music category may be associated with popularity and motivates later analysis of whether audio characteristics relate to popularity differently across categories.
+
 ## Interesting Aggregates
 
 <iframe
@@ -72,3 +82,4 @@ height="600"
 frameborder="0">
 </iframe>
 
+This grouped table shows the average audio characteristics for each selected music category. The differences across categories suggest that anime, classical, disney, jazz, and k-pop have different defining audio characteristics, which supports the project’s focus on whether different categories reward different musical traits.

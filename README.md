@@ -97,7 +97,7 @@ frameborder="0">
 
 This plot compares energy levels for tracks with missing and non-missing tempo values. Tracks with missing tempo appear to have a different energy distribution, supporting the permutation test results that tempo missingness depends on observed audio characteristics rather than occurring completely at random.
 
-Because tempo missingness appears related to observed audio characteristics, MAR appears more likely than NMAR. This is also supported by the fact that observed tempo values already span a broad range of reasonable musical tempos rather than appearing concentrated near particular values. However, if certain rhythmic structures or extraction difficulty directly cause tempo to become missing, then tempo would instead be NMAR. Additional data such as Spotify extraction confidence or rhythm metadata could help distinguish these possibilities. Thus, I do not believe there is a column in the dataset that is NMAR.
+Because tempo missingness appears related to observed audio characteristics, MAR appears more likely than NMAR. This is also supported by the fact that observed tempo values already span a broad range of reasonable musical tempos rather than appearing concentrated near particular values. However, if certain rhythmic structures or extraction difficulty directly cause tempo to become missing, then tempo would instead be NMAR. Additional data such as Spotify extraction confidence or rhythm metadata could help distinguish these possibilities. All this considered, I do not believe there is a column in the dataset that is NMAR.
 
 # Hypothesis Testing
 
@@ -109,7 +109,7 @@ To relate audio characteristics to popularity, I tested whether danceability is 
 
 **Test Statistic:** The absolute difference in mean popularity between above-median and below-median danceability tracks.
 
-**Significance Level:** 0.05.
+**Significance Level:** 0.05, because it is a standard choice and provides a balance between false positives and false negatives
 
 Using 10,000 permutations, the p-value was approximately 0, meaning that none of the shuffled trials produced a test statistic as large as the observed one. At the 0.05 significance level, we reject the null hypothesis. The observed difference is statistically significant and provides evidence of an association between danceability and popularity in the selected music categories overall.
 
@@ -176,7 +176,7 @@ R²(non-k-pop) − R²(k-pop)
 
 A positive value indicates that the model performs better for non-k-pop tracks.
 
-**Significance Level:** 0.05.
+**Significance Level:** 0.05, because it is a standard choice and provides a balance between false positives and false negatives
 
 Using the final model, I performed a permutation test with 10,000 permutations by randomly reassigning group labels while keeping predictions fixed. The observed difference in R² was **0.248**, and the resulting p-value was **0.0011**.
 
